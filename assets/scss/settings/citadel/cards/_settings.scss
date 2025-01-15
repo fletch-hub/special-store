@@ -58,7 +58,7 @@ $card-figure-marginTop:                     0;
 
 $card-figcaption-margin:                    0;
 
-$card-figcaption-body-display:              inline-block;
+$card-figcaption-body-display:              flex;
 
 $card-title-fontSize:                       fontSize("smaller");
 $card-title-margin:                         0 0 spacing("sixth");
@@ -69,6 +69,6 @@ $card-title-textDecoration:                 none;
 $card-text-marginBottom:                    spacing("eighth");
 
 $card-figcaption-button-border:             none;
-$card-figcaption-button-display:            block;
+$card-figcaption-button-display:            flex;
 $card-figcaption-button-margin:             0;
 $card-figcaption-button-margin:             spacing("quarter") 0 0;

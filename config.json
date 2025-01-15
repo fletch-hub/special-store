@@ -437,7 +437,18 @@
         ]
       },
       "images": {},
-      "settings": {}
+      "settings": {
+        "body-font": "Google_Karla_400,400i,700,700i",
+        "carousel-play-pause-button-textColor": "8f8f8f",
+        "supported_card_type_icons": [
+          "american_express",
+          "diners_club",
+          "discover",
+          "mastercard",
+          "unionpay",
+          "visa"
+        ]
+      }
     },
     {
       "name": "Bold",

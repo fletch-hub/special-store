@@ -40,3 +40,23 @@
         height: $input-small-height - remCalc($input-border-width * 2);
     }
 }
+
+.actionBar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: spacing("half");
+    &:before, &:after {
+        display: none;
+    }
+}
+
+.cartButtons {
+    display: flex;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: spacing("half");
+    .button + .button {
+        margin: 0;
+    }
+}

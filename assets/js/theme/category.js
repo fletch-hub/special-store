@@ -11,6 +11,12 @@ export default class Category extends CatalogPage {
     constructor(context) {
         super(context);
         this.validationDictionary = createTranslationDictionary(context);
+        this.addItemToCart = this.addItemToCart.bind(this);
+        this.removeItemFromCart = this.removeItemFromCart.bind(this);
+        this.addAllToCart = this.addAllToCart.bind(this);
+        this.removeAllFromCart = this.removeAllFromCart.bind(this);
+        this.confirmRemoveAllFromCart = this.confirmRemoveAllFromCart.bind(this);
+        this.getCartItemIds = this.getCartItemIds.bind(this);
     }
 
     setLiveRegionAttributes($element, roleType, ariaLiveStatus) {
@@ -60,7 +66,8 @@ export default class Category extends CatalogPage {
 
         this.ariaNotifyNoProducts();
 
-        $('#add-all-to-cart').on('click', this.handleAddAllToCart);
+        $('#add-all-to-cart').on('click', this.addAllToCart);
+        $('#remove-all-from-cart').on('click', this.confirmRemoveAllFromCart);
     }
 
     ariaNotifyNoProducts() {
@@ -116,7 +123,34 @@ export default class Category extends CatalogPage {
         });
     }
 
-    handleAddAllToCart() {
+    getNameById(id) {
+        return new Promise((resolve, reject) => {
+            utils.api.product.getById(id, { template: 'category/product-name' }, (err, response) => {
+                if (err) return reject(err);
+                return resolve(response);
+            });
+        });
+    }
+
+    addItemToCart(productId) {
+        return new Promise((resolve, reject) => {
+            const formData = new FormData();
+            formData.append('product_id', productId);
+            formData.append('qty[]', 1);
+
+            utils.api.cart.itemAdd(normalizeFormData(formData), (err, response) => {
+                if (err) {
+                    return reject(err);
+                }
+                console.log(`Item ${productId} add-to-cart response:`, response);
+                return resolve({ productId, response });
+            });
+        });
+    }
+
+    addAllToCart(e) {
+        e.preventDefault();
+
         const $body = $('body');
         const $button = $('#add-all-to-cart');
         $button.prop('disabled', true).text('Adding...');
@@ -124,37 +158,140 @@ export default class Category extends CatalogPage {
         const productIds = $('[data-entity-id]').map((_, el) => $(el).data('entity-id')).get();
 
         utils.api.cart.getCartQuantity({}, (error, cartQty) => {
-            if (!error) {
-                const addItems = productIds.map((id) => {
-                    return new Promise((resolve, reject) => {
-                        const formData = new FormData();
-                        formData.append('product_id', id);
-                        formData.append('qty[]', 1);
-                        utils.api.cart.itemAdd(normalizeFormData(formData), err => {
-                            if (err) reject(err);
-                            else resolve();
-                        });
+            if (error) {
+                console.error('Error getting cart quantity:', error);
+                $button.prop('disabled', true).text('Add All to Cart');
+                return;
+            }
+
+            let chain = Promise.resolve();
+            const errors = [];
+
+            productIds.forEach((id) => {
+                chain = chain.then(() => {
+                    return this.addItemToCart(id).then(({ productId, response }) => {
+                        if (response.data.error) {
+                            errors.push({ productId, error: response.data.error });
+                        }
                     });
                 });
+            });
 
-                Promise.all(addItems)
-                    .catch((err) => {
-                        console.error('Error adding items to cart', err);
-                        showAlertModal('Some items could not be added to the cart. Please try again.', {
-                            icon: 'error',
+            chain
+                .then(() => {
+                    if (errors.length) {
+                        console.error('Error adding items to cart:', errors);
+                        let errStr = '';
+                        let nameChain = Promise.resolve();
+                        errors.forEach(({ productId, error }) => {
+                            nameChain = nameChain.then(() => {
+                                return this.getNameById(productId).then((response) => {
+                                    console.log("error response", response);
+                                    errStr += `${response}:<br/><span class='errorText'>${error}</span></li>`;
+                                });
+                            });
                         });
-                    })
-                    .finally(() => {
-                        $button.prop('disabled', false).text('Add All to Cart');
-                        $body.trigger('cart-quantity-update', cartQty + productIds.length);
+
+                        nameChain.then(() => {
+                            showAlertModal(`<p>${errors.length} item${errors.length === 1 ? `` : 's'} could not be added to the cart:</p><ul class='errorList'>${errStr}</ul>`, {
+                                icon: 'warning',
+                            });
+                            $body.trigger('cart-quantity-update', cartQty + productIds.length - errors.length);
+                            $button.prop('disabled', false).text('Add All to Cart');
+                        });
+                    } else {
                         showAlertModal('All items have been added to the cart.', {
                             icon: 'success',
                         });
+                        $body.trigger('cart-quantity-update', cartQty + productIds.length);
+                        $button.prop('disabled', false).text('Add All to Cart');
+                    }
+                })
+                .catch((err) => {
+                    console.error('Error adding items to cart:', err);
+                    showAlertModal('Some items could not be added to the cart. Please try again.', {
+                        icon: 'error',
                     });
-            } else {
-                console.error('Error getting cart quantity', error);
-                $button.prop('disabled', true).text('Add All to Cart');
+                    $button.prop('disabled', false).text('Add All to Cart');
+                });
+        });
+    }
+
+    getCartItemIds(cart) {
+        const itemIdArr = [];
+        if (
+            !cart.lineItems.physicalItems.length ||
+            !cart.lineItems.digitalItems.length ||
+            !cart.lineItems.customItems.length ||
+            !cart.lineItems.giftCertificates.length
+        ) {
+            Object.keys(cart.lineItems).forEach((key) => {
+                cart.lineItems[key].forEach((item) => {
+                    itemIdArr.push(item.id);
+                });
+            });
+            return itemIdArr;
+        }
+
+        console.error('Error getting cart item ids');
+    }
+
+    removeItemFromCart(itemId) {
+        return new Promise((resolve, reject) => {
+            console.log('Removing itemId:', itemId);
+            utils.api.cart.itemRemove(itemId, (err, response) => {
+                if (err) return reject(err);
+                console.log(`Item ${itemId} removed from cart:`, response);
+                return resolve(response);
+            });
+        });
+    }
+
+    removeAllFromCart() {
+        const $body = $('body');
+        const $button = $('#remove-all-from-cart');
+        $button.prop('disabled', true).text('Emptying cart...');
+
+        utils.api.cart.getCart({}, (error, response) => {
+            if (error) {
+                showAlertModal('There was a problem removing all items from your cart.', {
+                    icon: 'error',
+                });
+                return;
             }
+
+            const itemIds = this.getCartItemIds(response);
+            if (!itemIds) return;
+
+            let chain = Promise.resolve();
+
+            itemIds.forEach((itemId) => {
+                chain = chain.then(() => this.removeItemFromCart(itemId));
+            });
+
+            chain
+                .then(() => {
+                    showAlertModal('All items have been removed from your cart.', {
+                        icon: 'success',
+                    });
+                    $body.trigger('cart-quantity-update', 0);
+                    $button.prop('disabled', false).text('Remove All Items');
+                })
+                .catch((err) => {
+                    console.error('Error removing items from cart:', err);
+                    showAlertModal('Some items could not be removed from the cart. Please try again.', {
+                        icon: 'error',
+                    });
+                });
+        });
+    }
+
+    confirmRemoveAllFromCart(e) {
+        e.preventDefault();
+        showAlertModal('Are you sure you want to remove all items from your cart?', {
+            icon: 'warning',
+            showCancelButton: true,
+            onConfirm: this.removeAllFromCart,
         });
     }
 }

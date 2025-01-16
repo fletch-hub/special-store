@@ -148,6 +148,23 @@
         }
     }
 
+    .success-icon { 
+        animation: animate-icon 0.5s;
+        border-color: #009621;
+        color: #009621;
+
+        .icon-content {
+            align-items: center;
+            animation: animate-icon-content 0.5s;
+            display: flex;
+            padding: 1em;
+            svg {
+                fill: #009621;
+                width: 100%;
+            }
+        }
+    }
+
     .modal-content {
         color: $alert-font-bodyColor;
         font-size: $alert-font-bodySize;

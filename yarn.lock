@@ -912,7 +912,7 @@
   resolved "http://192.168.1.61:4873/@bigcommerce/citadel/-/citadel-2.15.1.tgz#d7f5464a20657339fc787979a9880991b1ee963e"
   integrity sha512-br/e8zrb7y0/ixdqpTYr4F+3TD/S/zj+XSzx8rVCKAlmYEF0RJE8/fvjGzfqbG9cFEpLD+zeo2IBSKMsc2LyCQ==
 
-"@bigcommerce/stencil-utils@6.19.0":
+"@bigcommerce/stencil-utils@^6.19.0":
   version "6.19.0"
   resolved "http://192.168.1.61:4873/@bigcommerce/stencil-utils/-/stencil-utils-6.19.0.tgz#84d6232de66d10af2e231a8fe9b50882cff0697e"
   integrity sha512-Z9tWyHc76f8mi/Nnfae2NHSP8e6jC7KVU8cNrXSuWWfNhB2hoWd+GJqG9E3Uu+CKNwKCHeg7qpMuF8gsVn4xNw==

@@ -1,8 +1,11 @@
-import { hooks } from '@bigcommerce/stencil-utils';
+import utils, { hooks } from '@bigcommerce/stencil-utils';
 import CatalogPage from './catalog';
 import compareProducts from './global/compare-products';
 import FacetedSearch from './common/faceted-search';
 import { createTranslationDictionary } from '../theme/common/utils/translations-utils';
+import { normalizeFormData } from '../theme/common/utils/api';
+
+import { showAlertModal } from './global/modal';
 
 export default class Category extends CatalogPage {
     constructor(context) {
@@ -56,6 +59,8 @@ export default class Category extends CatalogPage {
         $('a.reset-btn').on('click', () => this.setLiveRegionsAttributes($('span.reset-message'), 'status', 'polite'));
 
         this.ariaNotifyNoProducts();
+
+        $('#add-all-to-cart').on('click', this.handleAddAllToCart);
     }
 
     ariaNotifyNoProducts() {
@@ -108,6 +113,48 @@ export default class Category extends CatalogPage {
                 maxPriceNotEntered,
                 onInvalidPrice,
             },
+        });
+    }
+
+    handleAddAllToCart() {
+        const $body = $('body');
+        const $button = $('#add-all-to-cart');
+        $button.prop('disabled', true).text('Adding...');
+
+        const productIds = $('[data-entity-id]').map((_, el) => $(el).data('entity-id')).get();
+
+        utils.api.cart.getCartQuantity({}, (error, cartQty) => {
+            if (!error) {
+                const addItems = productIds.map((id) => {
+                    return new Promise((resolve, reject) => {
+                        const formData = new FormData();
+                        formData.append('product_id', id);
+                        formData.append('qty[]', 1);
+                        utils.api.cart.itemAdd(normalizeFormData(formData), err => {
+                            if (err) reject(err);
+                            else resolve();
+                        });
+                    });
+                });
+
+                Promise.all(addItems)
+                    .catch((err) => {
+                        console.error('Error adding items to cart', err);
+                        showAlertModal('Some items could not be added to the cart. Please try again.', {
+                            icon: 'error',
+                        });
+                    })
+                    .finally(() => {
+                        $button.prop('disabled', false).text('Add All to Cart');
+                        $body.trigger('cart-quantity-update', cartQty + productIds.length);
+                        showAlertModal('All items have been added to the cart.', {
+                            icon: 'success',
+                        });
+                    });
+            } else {
+                console.error('Error getting cart quantity', error);
+                $button.prop('disabled', true).text('Add All to Cart');
+            }
         });
     }
 }

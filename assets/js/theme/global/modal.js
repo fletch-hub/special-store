@@ -318,6 +318,8 @@ export function showAlertModal(message, options = {}) {
         modal.$modal.find('.error-icon').show();
     } else if (icon === 'warning') {
         modal.$modal.find('.warning-icon').show();
+    } else if (icon === 'success') {
+        modal.$modal.find('.success-icon').show();
     }
 
     modal.updateContent(`<span>${message}</span>`);

@@ -1,0 +1,56 @@
+@mixin flexDiv($dir: row) {
+    display: flex;
+    @if $dir == row {
+        flex-direction: row;
+        -ms-flex-direction: row;
+    } @else {
+        flex-direction: column;
+        -ms-flex-direction: column;
+    }
+}
+
+.bonusGreeting {
+    @include flexDiv(column);
+    background-color: #06981c;
+
+    margin-bottom: spacing("single");
+    padding: spacing("single");
+    width: 100%;
+
+    *,
+    * * {
+        color: #fff;
+        margin: 0;
+
+        &:hover,
+        &:visited,
+        &:active {
+            color: #fff;
+        }
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: spacing("half");
+    }
+}
+
+.someData {
+    @include flexDiv(column);
+
+    &--small {
+        font-size: 10px;
+        margin-top: spacing("half");
+    }
+}
+
+.bonusInfo {
+    @include flexDiv(row);
+    align-items: start;
+    column-gap: spacing("double");
+    flex-wrap: wrap;
+    margin-top: spacing("single");
+    row-gap: spacing("single");
+    width: 100%;
+}

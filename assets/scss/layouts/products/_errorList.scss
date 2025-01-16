@@ -1,11 +1,11 @@
-ul.errorList{
+ul.errorList {
     li {
-        margin: 0 0 10px 0;
         font-size: 12px;
         list-style: none;
-        //text-align: left;
+        margin: 0 0 10px;
     }
-    & .errorText {
+
+    .errorText {
         color: red;
     }
 }

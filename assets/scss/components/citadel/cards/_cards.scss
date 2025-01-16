@@ -24,7 +24,7 @@
         }
     }
 
-    & img {
+    img {
         border-radius: $global-radius;
         overflow: hidden;
     }
@@ -64,20 +64,22 @@
 }
 
 .card-figcaption-body {
+    align-items: center;
     display: $card-figcaption-body-display;
-    pointer-events: all; // 1
-    transform: translate3d(0, -50%, 0); // 2
 
     flex-direction: column;
-    align-items: center;
 
     padding: $spacing-single;
+    pointer-events: all; // 1
+    transform: translate3d(0, -50%, 0); // 2
     width: 100%;
 
 
-    button, label, a {
-        width: 100%;
+    button,
+    label,
+    a {
         max-width: 175px;
+        width: 100%;
     }
 }
 
@@ -119,10 +121,10 @@
 .card-figcaption-button {
     border: $card-figcaption-button-border;
     display: $card-figcaption-button-display;
-    margin: $card-figcaption-button-margin;
 
     gap: $spacing-half;
     justify-content: center;
+    margin: $card-figcaption-button-margin;
 
     &:active {
         background-color: $card-figcaption-button-backgroundHover;

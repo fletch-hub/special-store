@@ -1,0 +1,32 @@
+
+<div class="bonusGreeting">
+    <h1>Bonus!</h1>
+    <hr>
+    <div class="bonusInfo">
+        <div class="someData">
+            <div class="someData">
+                <p>Logged in as:</p>
+                <h4>{{customer.name}}</h4>
+            </div>
+            <div class="someData someData--small">
+                <p>{{customer.email}}</p>
+                <p>{{customer.phone}}</p>
+            </div>
+            <div class="someData someData--small">
+                <p>{{customer.shipping_address.address1}}</p>
+                {{#if customer.shipping_address.address2}}
+                    <p>{{customer.shipping_address.address2}}</p>
+                {{/if}}
+                <p>{{customer.shipping_address.city}}, {{customer.shipping_address.state}} {{customer.shipping_address.zip}}</p>
+            </div>
+            <div class="someData someData--small">
+                <a href="/account.php?action=account_details">Edit Details</a>
+            </div>
+        </div>
+        <div class="someData">
+            <p>Available Store Credit:</p>
+            <h4>{{customer.store_credit.formatted}}</h4>
+        </div>
+        
+    </div>
+</div>

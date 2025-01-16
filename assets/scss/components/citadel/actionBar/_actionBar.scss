@@ -44,18 +44,21 @@
 .actionBar {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
     gap: spacing("half");
-    &:before, &:after {
+    justify-content: space-between;
+
+    &::before,
+    &::after {
         display: none;
     }
 }
 
 .cartButtons {
-    display: flex;
     align-items: flex-start;
+    display: flex;
     flex-wrap: nowrap;
     gap: spacing("half");
+
     .button + .button {
         margin: 0;
     }

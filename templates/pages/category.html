@@ -14,7 +14,9 @@ category:
 {{/partial}}
 
 {{#partial "page"}}
-
+{{#if customer}}
+    {{> components/category/bonus}}
+{{/if}}
 {{> components/common/breadcrumbs breadcrumbs=breadcrumbs}}
 {{#if category.image}}
     {{> components/common/responsive-img

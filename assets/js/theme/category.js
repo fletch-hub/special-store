@@ -142,7 +142,6 @@ export default class Category extends CatalogPage {
                 if (err) {
                     return reject(err);
                 }
-                console.log(`Item ${productId} add-to-cart response:`, response);
                 return resolve({ productId, response });
             });
         });
@@ -180,13 +179,12 @@ export default class Category extends CatalogPage {
             chain
                 .then(() => {
                     if (errors.length) {
-                        console.error('Error adding items to cart:', errors);
                         let errStr = '';
                         let nameChain = Promise.resolve();
                         errors.forEach(({ productId, error }) => {
+                            // want to get the product names and errors in the alert modal – there's probably a cleaner way to do this
                             nameChain = nameChain.then(() => {
                                 return this.getNameById(productId).then((response) => {
-                                    console.log("error response", response);
                                     errStr += `${response}:<br/><span class='errorText'>${error}</span></li>`;
                                 });
                             });
@@ -232,16 +230,14 @@ export default class Category extends CatalogPage {
             });
             return itemIdArr;
         }
-
-        console.error('Error getting cart item ids');
+        console.error('Error getting cart item ids')
+        return itemIdArr;
     }
 
     removeItemFromCart(itemId) {
         return new Promise((resolve, reject) => {
-            console.log('Removing itemId:', itemId);
             utils.api.cart.itemRemove(itemId, (err, response) => {
                 if (err) return reject(err);
-                console.log(`Item ${itemId} removed from cart:`, response);
                 return resolve(response);
             });
         });

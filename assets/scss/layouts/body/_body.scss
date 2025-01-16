@@ -60,15 +60,17 @@
     @include breakpoint("medium") {
         @include grid-column(4);
         padding-right: spacing("single");
+
         + .page-content {
             @include grid-column(8);
-            padding-left: spacing("single");
             border-left: solid 1px #f7f7f7;
+            padding-left: spacing("single");
         }
     }
     @include breakpoint("large") {
         @include grid-column(3);
         padding-right: spacing("single");
+
         + .page-content {
             @include grid-column(9);
             padding-left: spacing("single");

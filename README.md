@@ -1,6 +1,10 @@
 # What's going on here
 
-This is a test site using the BigCommerce platform, with modifications to the default Cornerstone theme.
+This is a test site using the BigCommerce platform, with modifications to the default Cornerstone theme per instructions.
+
+[Preview Link](https://erics-special-store.mybigcommerce.com/)
+
+Code: 4m5j8qiauj
 
 ## Overview
 
